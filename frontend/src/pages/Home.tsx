@@ -123,7 +123,7 @@ export default function Home() {
                 </span>
               </h2>
               <p className="text-xl text-gray-600 mb-10 leading-relaxed max-w-2xl mx-auto lg:mx-0">
-                Skip the queues and get delicious meals pre ordered directly from ur mobile.
+                Skip the queues and get delicious meals pre-ordered directly from your mobile.
                 Experience the future of airport dining today.
               </p>
               <div className="flex flex-col sm:flex-row gap-4 justify-center lg:justify-start">

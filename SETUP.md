@@ -52,6 +52,7 @@
 4. **Add to Cart**: Add items to cart and proceed to checkout
 5. **Pre-Order**: Set a delivery time when checking out
 6. **Track Order**: Monitor your order status in real-time
+7. **Cancel Order**: Test the cancellation flow from the My Orders page
 
 ## Troubleshooting
 

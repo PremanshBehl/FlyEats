@@ -288,9 +288,13 @@ export default function Checkout() {
             onChange={(e) => setSpecialNotes(e.target.value)}
             placeholder="Any special requests or dietary restrictions..."
             rows={4}
+            maxLength={300}
             className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-orange-500 text-gray-900 bg-white"
             style={{ color: '#111827' }}
           />
+          <p className={`text-xs mt-1 text-right ${specialNotes.length >= 280 ? 'text-red-500 font-medium' : 'text-gray-400'}`}>
+            {specialNotes.length} / 300
+          </p>
         </div>
 
         <button

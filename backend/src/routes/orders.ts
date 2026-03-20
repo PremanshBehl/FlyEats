@@ -249,6 +249,65 @@ router.get('/:id/queue', async (req, res) => {
   }
 })
 
+// Cancel an order (only PENDING or CONFIRMED orders can be cancelled)
+router.patch('/:id/cancel', async (req, res) => {
+  try {
+    const { id } = req.params
+    const { userId } = req.body
+
+    if (!userId) {
+      return res.status(400).json({ error: 'User ID is required' })
+    }
+
+    // Find the order and verify ownership
+    const order = await prisma.order.findUnique({
+      where: { id },
+      include: { delivery: true },
+    })
+
+    if (!order) {
+      return res.status(404).json({ error: 'Order not found' })
+    }
+
+    if (order.userId !== userId) {
+      return res.status(403).json({ error: 'You are not authorized to cancel this order' })
+    }
+
+    const cancellableStatuses = ['PENDING', 'CONFIRMED']
+    if (!cancellableStatuses.includes(order.status)) {
+      return res.status(400).json({
+        error: `Cannot cancel an order with status "${order.status}". Only PENDING or CONFIRMED orders can be cancelled.`,
+      })
+    }
+
+    // Cancel the order and its delivery record in a transaction
+    const [updatedOrder] = await prisma.$transaction([
+      prisma.order.update({
+        where: { id },
+        data: { status: 'CANCELLED' },
+        include: {
+          items: { include: { menuItem: true } },
+          outlet: true,
+          delivery: true,
+        },
+      }),
+      ...(order.delivery
+        ? [
+            prisma.delivery.update({
+              where: { orderId: id },
+              data: { status: 'CANCELLED' },
+            }),
+          ]
+        : []),
+    ])
+
+    return res.json({ order: updatedOrder })
+  } catch (error) {
+    console.error('Error cancelling order:', error)
+    return res.status(500).json({ error: 'Internal server error' })
+  }
+})
+
 export default router
 
 

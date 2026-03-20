@@ -5,7 +5,7 @@ import { z } from 'zod'
 const router = express.Router()
 
 const pnrSchema = z.object({
-  pnr: z.string().min(6).max(10),
+  pnr: z.string().min(6).max(10).regex(/^[A-Za-z0-9]+$/, 'PNR must contain only letters and numbers'),
 })
 
 // Lookup PNR details (simulated - in production, integrate with airline API)

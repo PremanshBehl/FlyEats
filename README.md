@@ -11,6 +11,8 @@ FlyEats is a fullstack web application that allows travelers to pre-order food f
 - 🚚 **Delivery Tracking**: Real-time delivery status updates
 - 🍔 **Multiple Categories**: Filter restaurants by cuisine type
 - 💳 **Order Management**: Track all your orders in one place
+- ❌ **Order Cancellation**: Cancel pending orders directly from your order history
+- 🛡️ **Secure PNR Validation**: Hardened alphanumeric validation for flight bookings
 
 ## Tech Stack
 
@@ -113,6 +115,7 @@ Delivery status is polled every 5-10 seconds to keep users informed about their 
 - `POST /api/orders` - Create new order
 - `GET /api/orders` - Get user orders
 - `GET /api/orders/[id]` - Order details
+- `PATCH /api/orders/[id]/cancel` - Cancel a pending order
 - `GET /api/delivery/[orderId]/track` - Track delivery
 
 ## Future Enhancements

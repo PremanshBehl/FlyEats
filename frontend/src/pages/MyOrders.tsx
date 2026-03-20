@@ -42,6 +42,7 @@ export default function MyOrders() {
     const navigate = useNavigate()
     const [orders, setOrders] = useState<Order[]>([])
     const [loading, setLoading] = useState(true)
+    const [cancellingId, setCancellingId] = useState<string | null>(null)
 
     useEffect(() => {
         const userId = sessionStorage.getItem('userId')
@@ -62,6 +63,36 @@ export default function MyOrders() {
                 setLoading(false)
             })
     }, [navigate])
+
+    const handleCancelOrder = async (e: React.MouseEvent, orderId: string) => {
+        e.preventDefault()
+        if (!window.confirm('Are you sure you want to cancel this order?')) return
+
+        const userId = sessionStorage.getItem('userId')
+        if (!userId) return
+
+        setCancellingId(orderId)
+        try {
+            const res = await apiFetch(`/api/orders/${orderId}/cancel`, {
+                method: 'PATCH',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ userId }),
+            })
+            if (res.ok) {
+                setOrders((prev) =>
+                    prev.map((o) => (o.id === orderId ? { ...o, status: 'CANCELLED' } : o))
+                )
+            } else {
+                const data = await res.json()
+                alert(data.error || 'Failed to cancel order')
+            }
+        } catch (err) {
+            console.error('Error cancelling order:', err)
+            alert('Failed to cancel order')
+        } finally {
+            setCancellingId(null)
+        }
+    }
 
     if (loading) {
         return (
@@ -167,6 +198,15 @@ export default function MyOrders() {
                                                     className="px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors font-semibold text-sm"
                                                 >
                                                     View Queue
+                                                </button>
+                                            )}
+                                            {order.status === 'PENDING' && (
+                                                <button
+                                                    onClick={(e) => handleCancelOrder(e, order.id)}
+                                                    disabled={cancellingId === order.id}
+                                                    className="px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors font-semibold text-sm disabled:opacity-50 disabled:cursor-not-allowed"
+                                                >
+                                                    {cancellingId === order.id ? 'Cancelling…' : 'Cancel Order'}
                                                 </button>
                                             )}
                                             <span className="text-sm text-orange-600 font-semibold hover:underline">
